@@ -1,5 +1,6 @@
 import { fetchEuroMillionsData, fetchRolloverInfo } from '../../fetchData.js';
 import { generateLotteryImage } from '../../cloudinary-update.js';
+import { saveLatestDrawImage } from '../../cloudinary-save.js';
 
 export default async (req) => {
   try {
@@ -10,13 +11,18 @@ export default async (req) => {
     // Check for rollover/super draw info
     const rolloverInfo = await fetchRolloverInfo();
     
-    // Generate the Cloudinary image URL with the latest data
-    const imageUrl = await generateLotteryImage({
+    const imageData = {
       prizeAmount,
       drawDate,
       drawType,
       isSuperDraw: rolloverInfo.isTripleRollover || rolloverInfo.rolloverText?.includes('Super')
-    });
+    };
+    
+    // Generate the Cloudinary image URL with the latest data
+    const imageUrl = await generateLotteryImage(imageData);
+    
+    // Save the transformed image as a new upload
+    const savedImage = await saveLatestDrawImage(imageData);
     
     return new Response(
       JSON.stringify({ 
@@ -25,6 +31,8 @@ export default async (req) => {
         drawDate, 
         drawType,
         imageUrl,
+        savedImageUrl: savedImage.secure_url,
+        savedPublicId: savedImage.public_id,
         rolloverInfo 
       }),
       { status: 200, headers: { 'Content-Type': 'application/json' } }

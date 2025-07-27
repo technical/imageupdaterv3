@@ -26,7 +26,7 @@ export default async (req) => {
     return new Response(imageBuffer, {
       status: 200,
       headers: {
-        'Content-Type': 'image/jpeg',
+        'Content-Type': 'image/png',
         'Cache-Control': 'public, max-age=3600', // Cache for 1 hour
         'X-Prize-Amount': prizeAmount,
         'X-Draw-Date': drawDate

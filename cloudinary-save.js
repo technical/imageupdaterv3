@@ -25,6 +25,7 @@ export async function saveTransformedImage(imageUrl, publicId = null) {
       public_id: publicId,
       overwrite: true,
       resource_type: 'image',
+      format: 'png',  // Force PNG format for OpenGraph compatibility
       folder: 'euromillions/saved',
       tags: ['euromillions', 'generated', 'lottery'],
       context: {

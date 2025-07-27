@@ -64,7 +64,8 @@ export async function generateLotteryImage(data) {
     // Generate the full URL by building it manually to preserve commas
     const baseUrl = `https://res.cloudinary.com/${process.env.CLOUDINARY_CLOUD_NAME}/image/upload`;
     const transformationString = transformations.join('/');
-    const imageUrl = `${baseUrl}/${transformationString}/Euro_template_ypcy4d`;
+    // Add format conversion to PNG
+    const imageUrl = `${baseUrl}/${transformationString}/f_png/Euro_template_ypcy4d`;
 
     console.log('Generated image URL:', imageUrl);
     return imageUrl;

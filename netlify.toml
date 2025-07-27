@@ -1,0 +1,5 @@
+[build]
+  functions = "netlify/functions"
+
+[functions."euromillions-scheduled"]
+  schedule = "30 0 * * 3,6"

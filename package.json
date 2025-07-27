@@ -1,0 +1,21 @@
+{
+  "name": "imageupdaterv3",
+  "version": "1.0.0",
+  "description": "A scraping utility to pull data from the Lottery's website and update cloudinary variables",
+  "type": "module",
+  "scripts": {
+    "build": "echo 'No build step required'",
+    "dev": "node fetchData.js"
+  },
+  "keywords": ["scraping", "cloudinary", "lottery", "netlify-functions"],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cheerio": "^1.0.0-rc.12",
+    "cloudinary": "^2.2.0",
+    "node-fetch": "^3.3.2"
+  },
+  "devDependencies": {
+    "dotenv": "^16.4.5"
+  }
+}

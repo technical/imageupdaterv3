@@ -6,22 +6,22 @@ export async function fetchEuroMillionsData() {
   const html = await response.text();
   const $ = cheerio.load(html);
 
-  // Try multiple selectors for jackpot amount
-  let prizeAmount = $('.jackpot-amount').first().text().trim() ||
-                    $('[data-test="jackpot-amount"]').first().text().trim() ||
-                    $('.game-jackpot').first().text().trim() ||
-                    $('*:contains("Estimated jackpot")').parent().find('.amount').text().trim();
+  // Find the jackpot amount - it's in an element with class containing "amount"
+  let prizeText = $('[class*="amount"]').first().text().trim();
+  console.log('Found prize text:', prizeText);
   
-  // Clean up the amount
-  prizeAmount = prizeAmount.replace(/[£,]/g, '').replace(/\D+$/, '');
+  // Extract just the number from "£131MMillion*" format
+  let prizeAmount = prizeText.match(/£(\d+)M/i)?.[1] || '';
   
-  // Try multiple selectors for draw date
-  const drawDateText = $('.jackpot-next-draw-date').first().text().trim() ||
-                      $('[data-test="next-draw-date"]').first().text().trim() ||
-                      $('.next-draw-date').first().text().trim() ||
-                      $('*:contains("Next draw")').first().text().trim();
+  // Find draw date - look for "This Tuesday" or similar in the jackpot section
+  const jackpotSection = $('[class*="jackpot"]').first().text();
+  let drawDate = '';
   
-  const drawDate = drawDateText.replace(/Next draw:?/i, '').trim();
+  // Extract day from text like "This Tuesday"
+  const dayMatch = jackpotSection.match(/This\s+(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday)/i);
+  if (dayMatch) {
+    drawDate = dayMatch[1];
+  }
   
   const drawType = 'EuroMillions';
 

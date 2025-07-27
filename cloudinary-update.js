@@ -13,11 +13,32 @@ export async function generateLotteryImage(data) {
   });
 
   try {
+    // Validate required data
+    if (!data.prizeAmount || !data.drawDate) {
+      throw new Error(`Missing required data: prizeAmount=${data.prizeAmount}, drawDate=${data.drawDate}`);
+    }
+    
     // Format the prize amount (assuming it's in millions)
     const prizeFormatted = `£${data.prizeAmount}M`;
     
-    // Format the draw date
-    const drawDateFormatted = data.drawDate;
+    // Format the draw date - if it's just a day name, add proper formatting
+    let drawDateFormatted = data.drawDate;
+    if (['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].includes(data.drawDate)) {
+      // Convert day name to a more complete format
+      const today = new Date();
+      const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+      const targetDay = daysOfWeek.indexOf(data.drawDate);
+      const currentDay = today.getDay();
+      
+      let daysUntilTarget = targetDay - currentDay;
+      if (daysUntilTarget <= 0) daysUntilTarget += 7;
+      
+      const targetDate = new Date(today);
+      targetDate.setDate(today.getDate() + daysUntilTarget);
+      
+      const options = { weekday: 'long', day: 'numeric', month: 'long' };
+      drawDateFormatted = targetDate.toLocaleDateString('en-GB', options);
+    }
     
     // Build the transformation URL using your template
     const transformations = [

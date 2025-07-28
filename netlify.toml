@@ -3,3 +3,6 @@
 
 [functions."euromillions-scheduled"]
   schedule = "30 0 * * 3,6"
+
+[functions."euromillions-retry"]
+  schedule = "0,30 * * * 3,6"

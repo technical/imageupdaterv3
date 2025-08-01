@@ -13,14 +13,28 @@ export async function fetchEuroMillionsData() {
   // Extract just the number from "£131MMillion*" format
   let prizeAmount = prizeText.match(/£(\d+)M/i)?.[1] || '';
   
-  // Find draw date - look for "This Tuesday" or similar in the jackpot section
+  // Find draw date - look for "tonight", "tomorrow", or day names in the jackpot section
   const jackpotSection = $('[class*="jackpot"]').first().text();
   let drawDate = '';
   
-  // Extract day from text like "This Tuesday"
-  const dayMatch = jackpotSection.match(/This\s+(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday)/i);
-  if (dayMatch) {
-    drawDate = dayMatch[1];
+  // Check if it says "tonight" or "tomorrow"
+  if (jackpotSection.toLowerCase().includes('tonight')) {
+    // Get current day
+    const today = new Date();
+    const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    drawDate = days[today.getDay()];
+  } else if (jackpotSection.toLowerCase().includes('tomorrow')) {
+    // Get tomorrow's day
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    drawDate = days[tomorrow.getDay()];
+  } else {
+    // Extract day from text like "This Tuesday" or just "Tuesday"
+    const dayMatch = jackpotSection.match(/(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday)/i);
+    if (dayMatch) {
+      drawDate = dayMatch[1];
+    }
   }
   
   const drawType = 'EuroMillions';

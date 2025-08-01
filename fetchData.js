@@ -2,9 +2,25 @@ import fetch from 'node-fetch';
 import * as cheerio from 'cheerio';
 
 export async function fetchEuroMillionsData() {
-  const response = await fetch('https://www.national-lottery.co.uk/games/euromillions');
-  const html = await response.text();
-  const $ = cheerio.load(html);
+  try {
+    const response = await fetch('https://www.national-lottery.co.uk/games/euromillions', {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+        'Accept-Language': 'en-GB,en;q=0.5',
+        'Accept-Encoding': 'gzip, deflate, br',
+        'Connection': 'keep-alive',
+        'Upgrade-Insecure-Requests': '1'
+      },
+      timeout: 10000 // 10 second timeout
+    });
+    
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
+    
+    const html = await response.text();
+    const $ = cheerio.load(html);
 
   // Find the jackpot amount - it's in an element with class containing "amount"
   let prizeText = $('[class*="amount"]').first().text().trim();
@@ -46,6 +62,11 @@ export async function fetchEuroMillionsData() {
   });
 
   return { prizeAmount, drawDate, drawType };
+  } catch (error) {
+    console.error('Error fetching EuroMillions data:', error);
+    // Return fallback data if fetch fails
+    throw new Error(`Failed to fetch lottery data: ${error.message}`);
+  }
 }
 
 export async function fetchRolloverInfo() {

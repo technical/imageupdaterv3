@@ -21,23 +21,17 @@ export async function generateLotteryImage(data) {
     // Format the prize amount (assuming it's in millions)
     const prizeFormatted = `£${data.prizeAmount}M`;
     
-    // Format the draw date - if it's just a day name, add proper formatting
+    // Format the draw date - if it's just a day name, keep it simple
     let drawDateFormatted = data.drawDate;
+    
+    // For day names, just use them directly without date calculation
+    // The lottery typically shows "Friday" or "Tuesday" for the upcoming draw
     if (['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].includes(data.drawDate)) {
-      // Convert day name to a more complete format
-      const today = new Date();
-      const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-      const targetDay = daysOfWeek.indexOf(data.drawDate);
-      const currentDay = today.getDay();
+      // Simply use the day name as is for cleaner display
+      drawDateFormatted = data.drawDate;
       
-      let daysUntilTarget = targetDay - currentDay;
-      if (daysUntilTarget <= 0) daysUntilTarget += 7;
-      
-      const targetDate = new Date(today);
-      targetDate.setDate(today.getDate() + daysUntilTarget);
-      
-      const options = { weekday: 'long', day: 'numeric', month: 'long' };
-      drawDateFormatted = targetDate.toLocaleDateString('en-GB', options);
+      // Optionally, you could add "This" or "Next"
+      // drawDateFormatted = `This ${data.drawDate}`;
     }
     
     // Build the transformation URL using your template

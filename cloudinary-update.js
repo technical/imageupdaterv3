@@ -21,17 +21,30 @@ export async function generateLotteryImage(data) {
     // Format the prize amount (assuming it's in millions)
     const prizeFormatted = `£${data.prizeAmount}M`;
     
-    // Format the draw date - if it's just a day name, keep it simple
+    // Format the draw date - if it's just a day name, add the actual date
     let drawDateFormatted = data.drawDate;
     
-    // For day names, just use them directly without date calculation
-    // The lottery typically shows "Friday" or "Tuesday" for the upcoming draw
+    // For day names, calculate the next occurrence of that day
     if (['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].includes(data.drawDate)) {
-      // Simply use the day name as is for cleaner display
-      drawDateFormatted = data.drawDate;
+      const today = new Date();
+      const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+      const targetDay = daysOfWeek.indexOf(data.drawDate);
+      const currentDay = today.getDay();
       
-      // Optionally, you could add "This" or "Next"
-      // drawDateFormatted = `This ${data.drawDate}`;
+      let daysUntilTarget = targetDay - currentDay;
+      // If it's the same day (tonight's draw), use today
+      // If it's in the past this week, add 7 to get next week
+      if (daysUntilTarget < 0) daysUntilTarget += 7;
+      
+      const targetDate = new Date(today);
+      targetDate.setDate(today.getDate() + daysUntilTarget);
+      
+      // Format as "Tuesday 19th August"
+      const day = targetDate.getDate();
+      const month = targetDate.toLocaleDateString('en-GB', { month: 'long' });
+      const ordinal = day + (day % 10 === 1 && day !== 11 ? 'st' : day % 10 === 2 && day !== 12 ? 'nd' : day % 10 === 3 && day !== 13 ? 'rd' : 'th');
+      
+      drawDateFormatted = `${data.drawDate} ${ordinal} ${month}`;
     }
     
     // Build the transformation URL using your template
